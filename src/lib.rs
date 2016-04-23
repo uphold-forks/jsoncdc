@@ -1,7 +1,8 @@
 extern crate libc;
+mod json_decoder;
 use std::ffi::CString;
 use std::mem::size_of;
-
+use json_decoder::startup_helper;
 #[cfg(pg94)] #[cfg_attr(rustfmt, rustfmt_skip)]
 #[allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub mod pg94;
@@ -28,10 +29,7 @@ pub unsafe extern "C" fn init(cb: *mut pg::OutputPluginCallbacks) {
 unsafe extern "C" fn startup(ctx: *mut pg::Struct_LogicalDecodingContext,
                              options: *mut pg::OutputPluginOptions,
                              _is_init: pg::_bool) {
-    use pg::Enum_OutputPluginOutputType::*;
-    let last_relid = pg::palloc0(size_of::<pg::Oid>() as u64);
-    (*ctx).output_plugin_private = last_relid;
-    (*options).output_type = OUTPUT_PLUGIN_TEXTUAL_OUTPUT;
+    json_decoder::startup_helper(ctx, options, _is_init);
 }
 
 unsafe extern "C" fn begin(ctx: *mut pg::Struct_LogicalDecodingContext,
