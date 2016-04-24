@@ -1,19 +1,13 @@
 extern crate libc;
-mod json_decoder;
 use std::ffi::CString;
 use std::mem::size_of;
-use json_decoder::startup_helper;
-#[cfg(pg94)] #[cfg_attr(rustfmt, rustfmt_skip)]
-#[allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
-pub mod pg94;
-#[cfg(pg94)]
-pub use pg94 as pg;
+extern crate pgrustxn;
 
-#[cfg(pg95)] #[cfg_attr(rustfmt, rustfmt_skip)]
-#[allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
-pub mod pg95;
+#[cfg(pg94)]
+pub use pgrustxn::pg94 as pg;
+
 #[cfg(pg95)]
-pub use pg95 as pg;
+pub use pgrustxn::pg95 as pg;
 
 
 // Implementation of initialization and callbacks.
@@ -29,7 +23,7 @@ pub unsafe extern "C" fn init(cb: *mut pg::OutputPluginCallbacks) {
 unsafe extern "C" fn startup(ctx: *mut pg::Struct_LogicalDecodingContext,
                              options: *mut pg::OutputPluginOptions,
                              _is_init: pg::_bool) {
-    json_decoder::startup_helper(ctx, options, _is_init);
+    pgrustxn::decoder::set_output_to_textual(ctx, options, _is_init)
 }
 
 unsafe extern "C" fn begin(ctx: *mut pg::Struct_LogicalDecodingContext,

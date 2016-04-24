@@ -1,0 +1,8 @@
+[package]
+name = "pgrustxn"
+version = "0.0.1"
+authors = ["Alex Newman <posi@planet.com>",
+           "Jason Dusek <jason.dusek@gmail.com>"]
+
+[dev-dependencies]
+rustfmt = "*"

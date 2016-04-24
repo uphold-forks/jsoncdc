@@ -29,7 +29,6 @@ ifeq ($(shell uname -s),Darwin)
 LINK_FLAGS   = -C link-args='-Wl,-undefined,dynamic_lookup'
 endif
 
-
 ifeq ($(HAZRUST),yes)
 .PHONY: jsoncdc.so
 jsoncdc.so:
@@ -70,4 +69,3 @@ all: jsoncdc.so
 test:
 	pgxn check ./
 	util/checkstyle
-
