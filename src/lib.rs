@@ -1,15 +1,7 @@
 extern crate libc;
-use std::ffi::CString;
 use std::mem::size_of;
-extern crate pgrustxn;
-
-#[cfg(pg94)]
-pub use pgrustxn::pg94 as pg;
-
-#[cfg(pg95)]
-pub use pgrustxn::pg95 as pg;
-
-// Symbols Postgres needs to find.
+extern crate rpg95_sys as pg;
+extern crate rpg as pgrustxn;
 
 #[allow(non_snake_case)]
 #[no_mangle]
@@ -66,4 +58,11 @@ unsafe extern "C" fn commit(ctx: *mut pg::Struct_LogicalDecodingContext,
 
 unsafe extern "C" fn shutdown(ctx: *mut pg::Struct_LogicalDecodingContext) {
     pg::pfree((*ctx).output_plugin_private);
+}
+
+unsafe extern "C" fn row_to_json(fcinfo: pg::FunctionCallInfo) -> pg::Datum {
+    // We wrap the unsafe call to make it safe, so that it can be passed as
+    // a function pointer to DirectFunctionCall1Coll(). This is a spurious
+    // artifact of the generated binding.
+    unsafe { pg::row_to_json(fcinfo) }
 }

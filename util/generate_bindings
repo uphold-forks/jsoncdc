@@ -2,7 +2,7 @@
 set -e
 
 pg_short_version=pg"`pg_config --version | cut -d' ' -f2 | tr -d . | cut -c-2`"
-output=src/"$pg_short_version".rs
+output=lib.rs
 
 case "${1:-}" in
   --select-pg) echo "$pg_short_version" ; exit 0 ;;

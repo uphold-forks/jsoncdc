@@ -1,8 +1,8 @@
-#[cfg(pg94)]
-pub use pg94 as pg;
+#[cfg(feature = "rpg94-sys")]
+extern crate rpg94_sys as pg;
 
-//#[cfg(pg95)]
-pub use pg95 as pg;
+#[cfg(feature = "rpg95-sys")]
+extern crate rpg95_sys as pg;
 
 use std::ffi::CString;
 use std::mem::size_of;

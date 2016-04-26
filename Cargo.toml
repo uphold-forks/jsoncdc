@@ -1,10 +1,9 @@
 [package]
 name = "jsoncdc"
-version = "0.0.7"
+version = "0.0.8"
 authors = ["Alex Newman <posi@planet.com>",
            "Jason Dusek <jason.dusek@gmail.com>"]
 build = "build.rs"
-
 
 [lib]
 name = "jsoncdc"
@@ -12,10 +11,8 @@ crate-type = ["dylib"]
 
 [dependencies]
 libc = "*"
-pgrustxn = {version = "*", path= "../pgrustxn"}
-
-[dev-dependencies]
-rustfmt = "*"
+rpg = { path = "rpg", features = ["pg95"] }
+rpg95-sys = { path = "rpg/rpg95-sys" }
 
 [build-dependencies]
 gcc = "*"

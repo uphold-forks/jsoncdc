@@ -11,6 +11,7 @@ function main {
 
 function tools {
   cargo install rustfmt
+  sudo pip install --upgrade pip
   sudo pip install pgxnclient
 }
 
@@ -37,8 +38,7 @@ function linux {
   PG_DIR=/etc/postgresql/"$VERSION"/main
   HBA_CONF="$PG_DIR"/pg_hba.conf
   CONF="$PG_DIR"/postgresql.conf
-
-  sudo -E env PATH="$PATH" LD_LIBRARY_PATH="$LD_LIBRARY_PATH" (cd jsoncdc; make install)
+  sudo -E env PATH="$PATH" LD_LIBRARY_PATH="$LD_LIBRARY_PATH" make install
   sudo pg_ctlcluster "$VERSION" main stop
 
   msg "Setting $HBA_CONF settings..."
@@ -66,7 +66,7 @@ function osx {
   brew remove postgresql >> "$BREW_LOG"
   brew upgrade >> "$BREW_LOG"
 
-  (cd jsoncdc; make clean all install)
+  make clean all install
 
   msg "Setting $HBA_CONF settings..."
   hba >> "$HBA_CONF"

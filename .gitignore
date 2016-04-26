@@ -11,4 +11,6 @@
 /target/
 
 # our outgenerated bindings
-src/libpq.rs
+#pgrustxn/src/libpq.rs
+
+*.lock

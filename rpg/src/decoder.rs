@@ -1,9 +1,10 @@
-#[cfg(pg94)]
-pub use pg94 as pg;
+#[cfg(feature = "rpg94-sys")]
+extern crate rpg94_sys as pg;
 
-//#[cfg(pg95)]
-pub use pg95 as pg;
+#[cfg(feature = "rpg95-sys")]
+extern crate rpg95_sys as pg;
 
+use schematricks;
 use std::ffi::CString;
 
 use std::mem::size_of;
@@ -22,8 +23,6 @@ pub fn change(ctx: *mut pg::Struct_LogicalDecodingContext,
             pg::OutputPluginWrite(ctx, CFALSE);
             *last_relid = relid;
         }
-    }
-    unsafe {
         pg::OutputPluginPrepareWrite(ctx, CTRUE);
         append_change(relation, change, (*ctx).out);
         pg::OutputPluginWrite(ctx, CTRUE);
@@ -80,7 +79,7 @@ unsafe fn append<T: Into<Vec<u8>>>(t: T, out: pg::StringInfo) {
 unsafe fn append_schema(relation: pg::Relation, out: pg::StringInfo) {
     let relid = (*relation).rd_id;
     let tupdesc = (*relation).rd_att;
-    let name = pg::get_rel_name(relid);
+    let name = schematricks::get_rel_name(relid);
     let ns = pg::get_namespace_name(pg::get_rel_namespace(relid));
     let qualified_name = pg::quote_qualified_identifier(ns, name);
     append("{ \"table\": ", out);

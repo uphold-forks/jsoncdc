@@ -15,4 +15,4 @@ addons:
     - libclang-common-3.4-dev
     - clang-3.4
 before_script: util/travis
-script: make test
+script: make all test
