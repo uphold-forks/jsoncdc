@@ -1,12 +1,17 @@
-use pg95 as pg;
+#[cfg(pg94)]
+pub use pg94 as pg;
+
+//#[cfg(pg95)]
+pub use pg95 as pg;
+
 use std::ffi::CString;
 
 use std::mem::size_of;
 
 pub fn change(ctx: *mut pg::Struct_LogicalDecodingContext,
-                            _txn: *mut pg::ReorderBufferTXN,
-                            relation: pg::Relation,
-                            change: *mut pg::ReorderBufferChange) {
+              _txn: *mut pg::ReorderBufferTXN,
+              relation: pg::Relation,
+              change: *mut pg::ReorderBufferChange) {
     unsafe {
         let relid = (*relation).rd_id;
         let last_relid: *mut pg::Oid =
@@ -25,19 +30,17 @@ pub fn change(ctx: *mut pg::Struct_LogicalDecodingContext,
     }
 }
 
-
 unsafe fn append_change(relation: pg::Relation,
                         change: *mut pg::ReorderBufferChange,
                         out: pg::StringInfo) {
-    use pg95::Enum_ReorderBufferChangeType::*;
     let tuple_desc = (*relation).rd_att;
     let tuples = (*change).data.tp();
     let tuple_new = (*tuples).newtuple;
     let tuple_old = (*tuples).oldtuple;
     let token = match (*change).action {
-        REORDER_BUFFER_CHANGE_INSERT => "insert",
-        REORDER_BUFFER_CHANGE_UPDATE => "update",
-        REORDER_BUFFER_CHANGE_DELETE => "delete",
+        pg::Enum_ReorderBufferChangeType::REORDER_BUFFER_CHANGE_INSERT => "insert",
+        pg::Enum_ReorderBufferChangeType::REORDER_BUFFER_CHANGE_UPDATE => "update",
+        pg::Enum_ReorderBufferChangeType::REORDER_BUFFER_CHANGE_DELETE => "delete",
         _ => panic!("Unrecognized change action!"),
     };
     append("{ ", out);

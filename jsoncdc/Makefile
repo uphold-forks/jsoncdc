@@ -32,7 +32,7 @@ endif
 ifeq ($(HAZRUST),yes)
 .PHONY: jsoncdc.so
 jsoncdc.so:
-	cargo rustc --release -- --cfg $(PGXX) $(LINK_FLAGS)
+	cargo rustc --verbose --release -- --cfg $(PGXX) $(LINK_FLAGS)
 	cp target/release/libjsoncdc.* $@
 
 .PHONY: cargoclean
