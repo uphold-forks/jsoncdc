@@ -94,6 +94,10 @@ unsafe fn append_change(relation: pg::Relation,
                         change: *mut pg::ReorderBufferChange,
                         out: pg::StringInfo) {
     use pg::Enum_ReorderBufferChangeType::*;
+    let relid = (*relation).rd_id;
+    let name = pg::get_rel_name(relid);
+    let ns = pg::get_namespace_name(pg::get_rel_namespace(relid));
+    let qualified_name = pg::quote_qualified_identifier(ns, name);
     let tuple_desc = (*relation).rd_att;
     let tuples = (*change).data.tp();
     let tuple_new = (*tuples).newtuple;
@@ -112,6 +116,10 @@ unsafe fn append_change(relation: pg::Relation,
         out.add_str(", \"@\": ");
         append_tuple_buf_as_json(tuple_old, tuple_desc, out);
     }
+    out.add_str(", ");
+    out.add_json("table");
+    out.add_str(": ");
+    out.add_json(qualified_name);
     out.add_str(" }");
 }
 
@@ -122,9 +130,8 @@ unsafe fn append_tuple_buf_as_json(data: *mut pg::ReorderBufferTupleBuf,
         let heap_tuple = &mut (*data).tuple;
         let datum = pg::heap_copy_tuple_as_datum(heap_tuple, desc);
         let empty_oid: pg::Oid = 0;
-        let json = pg::DirectFunctionCall1Coll(Some(row_to_json),
-                                               empty_oid,
-                                               datum);
+        let json =
+            pg::DirectFunctionCall1Coll(Some(row_to_json), empty_oid, datum);
         let ptr = json as *const pg::Struct_varlena;
         let text = pg::text_to_cstring(ptr);
         pg::appendStringInfoString(out, text);
